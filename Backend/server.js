@@ -6,7 +6,7 @@ const taskRoutes = require("./routes/taskRoutes");
 const { notFound, errorHandler } = require("./middleware/errorHandler");
 
 const app = express();
-const origins = (process.env.CLIENT_URL || "http://localhost:5173").split(",").map((s) => s.trim());
+const origins = (process.env.CLIENT_URL || "/api").split(",").map((s) => s.trim());
 
 app.use(cors({ origin: origins }));
 app.use(express.json());
