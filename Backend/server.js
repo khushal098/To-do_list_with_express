@@ -11,10 +11,25 @@ const origins = (process.env.CLIENT_URL || "http://localhost:5173").split(",").m
 app.use(cors({ origin: origins }));
 app.use(express.json());
 
-app.get("/", (req, res) => res.json({ success: true, message: "To-Do API is running" }));
+// Make sure the DB is connected before handling a request
+app.use(async (req, res, next) => {
+  try {
+    await connectDB();
+    next();
+  } catch (err) {
+    next(err);
+  }
+});
+
+app.get("/api", (req, res) => res.json({ success: true, message: "To-Do API is running" }));
 app.use("/api/tasks", taskRoutes);
 app.use(notFound);
 app.use(errorHandler);
 
-const PORT = process.env.PORT || 5000;
-connectDB().then(() => app.listen(PORT, () => console.log(`Server running on port ${PORT}`)));
+// Only listen locally. Vercel handles this itself.
+if (!process.env.VERCEL) {
+  const PORT = process.env.PORT || 5000;
+  app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+}
+
+module.exports = app;
